@@ -1,4 +1,5 @@
 import { PropsWithChildren } from 'react';
+import Loading from 'src/components/ui/Loading';
 
 export default function Layout({
   children,
@@ -10,7 +11,7 @@ export default function Layout({
         <div className="md:max-w-md md:mx-auto flex-grow min-h-2">
           <div className="flex-grow px-4 py-5">
             {!isLoading && children}
-            {isLoading && 'loading...'}
+            {isLoading && <Loading className="w-14 mx-auto" />}
           </div>
         </div>
       </div>

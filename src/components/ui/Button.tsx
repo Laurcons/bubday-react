@@ -1,6 +1,7 @@
 import classNames from 'classnames';
 import { twMerge } from 'tailwind-merge';
 import loading from '../../assets/loading.svg';
+import Loading from 'src/components/ui/Loading';
 
 export default function Button(
   props: React.DetailedHTMLProps<
@@ -16,7 +17,7 @@ export default function Button(
     <button
       {...props}
       className={twMerge(
-        'rounded-lg drop-shadow-sm w-full hover:drop-shadow-lg text-white py-2 px-3',
+        'rounded-lg drop-shadow-sm hover:drop-shadow-lg text-white py-2 px-3',
         classNames({
           'bg-gradient-to-r from-amber-500 to-amber-700':
             props.variant === 'primary' && !props.disabled,
@@ -33,7 +34,7 @@ export default function Button(
       {props.isLoading && (
         <div className="absolute right-3 top-0 bottom-0 flex align-middle">
           {/* <div className="float-right"> */}
-          <img src={loading} width="24px"></img>
+          <Loading className="w-4" />
         </div>
       )}
     </button>

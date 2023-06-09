@@ -69,7 +69,7 @@ export function InviteeProvider({ children }: PropsWithChildren) {
 
   const ctx = {
     invitee,
-    isLoading: isLoading || !token,
+    isLoading: isLoading || (!token && !urlCode) || (!token && !!urlCode),
     refetch,
     setUrlCode,
     axios,

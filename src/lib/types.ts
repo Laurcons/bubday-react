@@ -7,6 +7,7 @@ export interface Invitee {
 
   presenceStatus: PresenceStatus;
   pizzaPreference: string;
+  favoriteSong: string;
 }
 
 export enum PresenceStatus {

@@ -3,6 +3,8 @@ import HomePage from './routes';
 import InvitationPage from 'src/routes/i/code';
 import { QueryClient, QueryClientProvider } from 'react-query';
 import { InviteeProvider } from 'src/lib/useUser';
+import { ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.min.css';
 
 const router = createBrowserRouter([
   {
@@ -23,6 +25,7 @@ function App() {
     <QueryClientProvider client={queryClient}>
       <InviteeProvider>
         <RouterProvider router={router}></RouterProvider>
+        <ToastContainer />
       </InviteeProvider>
     </QueryClientProvider>
   );
