@@ -1,11 +1,14 @@
-import { useState } from 'react';
-import { Mutation } from 'react-query';
+import { useMemo, useState } from 'react';
 import Button from 'src/components/ui/Button';
 import Input from 'src/components/ui/Input';
 import P from 'src/components/ui/P';
 import Select from 'src/components/ui/Select';
 import { PresenceStatus } from 'src/lib/types';
 import { useInvitee } from 'src/lib/useUser';
+import menuPdf from 'src/assets/meniu-bubday.pdf';
+import A from 'src/components/ui/A';
+import Deadline from 'src/components/Deadline';
+import { useDeadline } from 'src/lib/useDeadline';
 
 export function PresenceStatusSignupPart({
   mutate,
@@ -15,7 +18,10 @@ export function PresenceStatusSignupPart({
   const { invitee } = useInvitee();
   return (
     <>
-      <P className="text-sm">Ai timp să te răzgândești până în 25 iunie.</P>
+      <P className="text-sm">
+        Ai timp să te {!!invitee?.presenceStatus ? 'răz' : 'mai '}gândești până
+        în <Deadline />.
+      </P>
       <div className="flex flex-col gap-2">
         {Object.values(PresenceStatus).map((status) => (
           <Button
@@ -48,22 +54,44 @@ export function PizzaPreferenceSignupPart({
   return (
     <>
       <P className="text-sm">
-        De la Restaurant Big Belly. Ai timp să te răzgândești până în 25 iunie.
+        <A href={menuPdf} target="_blank">
+          Vezi meniu.
+        </A>{' '}
+        Ai timp să te {!!invitee?.pizzaPreference ? 'răz' : 'mai '}gândești până
+        în <Deadline />.
       </P>
       <Select
         value={invitee!.pizzaPreference}
         onChange={(ev) => mutate(ev.target.value)}
       >
-        <option value="" disabled>
+        <option value="" selected disabled>
           Alege...
         </option>
-        {['Capriciosa', 'Big Belly', 'Carbonara', 'Quatro Stagioni'].map(
-          (text) => (
-            <>
-              <option value={text}>{text}</option>
-            </>
-          )
-        )}
+        {[
+          'Nazareth',
+          'Gourmet',
+          'Diavolo',
+          'Prosciutto Cotto',
+          'Carbonara',
+          'Big Belly',
+          'Quatro Stagioni',
+          'Provinciale',
+          'Canibale',
+          'Prosciutto e Rucola',
+          'Prosciutto e Funghi',
+          'Prosciutto Crudo',
+          'Pizza cu Ton',
+          'Capriciosa',
+          'Hawaii',
+          'Margherita',
+          'Vegetariană',
+          'Quatro Formaggi',
+          'Panne',
+        ].map((text) => (
+          <>
+            <option value={text}>{text}</option>
+          </>
+        ))}
       </Select>
     </>
   );
@@ -80,7 +108,8 @@ export function FavoriteSongSignupPart({
     <>
       <P className="text-sm">
         Lasă aici un link la piesa ta preferată, sau o dedicație pentru mine.
-        Dacă nu vrei, lasă orice alt text.
+        Dacă nu vrei, lasă orice alt text. Ai timp să te{' '}
+        {!!invitee?.favoriteSong ? 'răz' : 'mai '}gândești până în <Deadline />.
       </P>
       <div className="flex gap-2 mb-2">
         <Input
@@ -109,9 +138,10 @@ export function FavoriteSongSignupPart({
 }
 
 export function GreatSignupPart({ stats }: { stats: any }) {
+  const { isPastDeadline } = useDeadline();
   return (
     <>
-      {stats?.confirmedCount !== 1 ? (
+      {stats?.confirmedCount > 1 ? (
         <P>
           Tu și alți{' '}
           <span className="text-amber-500">
@@ -122,11 +152,27 @@ export function GreatSignupPart({ stats }: { stats: any }) {
       ) : (
         <P className="text-gray-200">Ești primul care a confirmat prezența!</P>
       )}
-      <P>
-        Te poți oricând întoarce pe această pagină pentru a revizui preferințele
-        tale.
-      </P>
+      {!isPastDeadline && (
+        <P>
+          Te poți oricând întoarce pe această pagină pentru a revizui
+          preferințele tale.
+        </P>
+      )}
       <ForDetailsSignupPart />
+      <P>
+        Site hostat prin DigitalOcean. Obține $200 cu care să te joci folosind{' '}
+        <A
+          target="_blank"
+          href="https://www.digitalocean.com/?refcode=72172f34b447&utm_campaign=Referral_Invite&utm_medium=Referral_Program&utm_source=badge"
+        >
+          codul meu promoțional
+        </A>
+        . Vezi proiectul pe{' '}
+        <A href="https://github.com/Laurcons/bubday-api" target="_blank">
+          GitHub
+        </A>
+        .
+      </P>
     </>
   );
 }
@@ -138,6 +184,38 @@ export function ForDetailsSignupPart() {
         Pentru orice alte detalii, sau dacă vrei să îmi spui ceva,
         contactează-mă pe WhatsApp / Discord.
       </P>
+    </>
+  );
+}
+
+export function PastDeadlineSignupPart() {
+  const { invitee } = useInvitee();
+  const isComing = useMemo(
+    () => invitee?.presenceStatus === PresenceStatus.confirmed,
+    [invitee?.presenceStatus]
+  );
+  return (
+    <>
+      {isComing ? (
+        <>
+          <P>Preferințele tale:</P>
+          <ol className="list-disc ml-7 mb-3">
+            <li>
+              Pizza: {invitee?.pizzaPreference} (
+              <A href={menuPdf} target="_blank">
+                vezi meniu
+              </A>
+              )
+            </li>
+            <li>Piesă preferată / dedicație: {invitee?.favoriteSong}</li>
+          </ol>
+        </>
+      ) : (
+        <>
+          <P>Nu ai confirmat prezența.</P>
+        </>
+      )}
+      <P>Pentru orice schimbări, te rog adresează-mi-te direct.</P>
     </>
   );
 }

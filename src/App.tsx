@@ -5,6 +5,7 @@ import { QueryClient, QueryClientProvider } from 'react-query';
 import { InviteeProvider } from 'src/lib/useUser';
 import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.min.css';
+import { DeadlineProvider } from 'src/lib/useDeadline';
 
 const router = createBrowserRouter([
   {
@@ -24,8 +25,10 @@ function App() {
   return (
     <QueryClientProvider client={queryClient}>
       <InviteeProvider>
-        <RouterProvider router={router}></RouterProvider>
-        <ToastContainer />
+        <DeadlineProvider>
+          <RouterProvider router={router}></RouterProvider>
+          <ToastContainer />
+        </DeadlineProvider>
       </InviteeProvider>
     </QueryClientProvider>
   );

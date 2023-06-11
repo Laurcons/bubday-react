@@ -11,15 +11,18 @@ import {
   FavoriteSongSignupPart,
   ForDetailsSignupPart,
   GreatSignupPart,
+  PastDeadlineSignupPart,
   PizzaPreferenceSignupPart,
   PresenceStatusSignupPart,
 } from 'src/routes/i/_signup-parts';
 import Loading from 'src/components/ui/Loading';
 import { toast } from 'react-toastify';
+import { useDeadline } from 'src/lib/useDeadline';
 
 export default function InvitationPage() {
   const { invitee, isLoading, setUrlCode, axios, refetch } = useInvitee();
   const { urlCode } = useParams();
+  const { isPastDeadline } = useDeadline();
   const finalPartRef = useRef<HTMLHeadingElement>(null);
 
   const {
@@ -94,7 +97,7 @@ export default function InvitationPage() {
           name: 'te bagi',
           title: 'Te bagi?',
           isLoading: presenceStatusM.isLoading,
-          if: true,
+          if: !isPastDeadline,
           children: (
             <PresenceStatusSignupPart mutate={presenceStatusM.mutateAsync} />
           ),
@@ -103,7 +106,9 @@ export default function InvitationPage() {
           name: 'pizza',
           title: 'Ce pizza dorești?',
           isLoading: pizzaM.isLoading,
-          if: invitee?.presenceStatus === PresenceStatus.confirmed,
+          if:
+            !isPastDeadline &&
+            invitee?.presenceStatus === PresenceStatus.confirmed,
           children: <PizzaPreferenceSignupPart mutate={pizzaM.mutateAsync} />,
         },
         {
@@ -111,9 +116,17 @@ export default function InvitationPage() {
           title: 'Care e piesa ta preferată?',
           isLoading: favSongM.isLoading,
           if:
+            !isPastDeadline &&
             invitee?.presenceStatus === PresenceStatus.confirmed &&
             !!invitee?.pizzaPreference,
           children: <FavoriteSongSignupPart mutate={favSongM.mutateAsync} />,
+        },
+        {
+          name: 'past ddl',
+          title: 'Deadline-ul de completare a fost depășit 😶‍🌫️',
+          isLoading: false,
+          if: isPastDeadline,
+          children: <PastDeadlineSignupPart />,
         },
         {
           name: 'great',
@@ -129,14 +142,20 @@ export default function InvitationPage() {
           name: 'maybe',
           title: 'Ok! Aștept cu nerăbdare răspunsul tău 🥺',
           isLoading: false,
-          if: invitee?.presenceStatus === PresenceStatus.possible,
+          if:
+            !isPastDeadline &&
+            invitee?.presenceStatus === PresenceStatus.possible,
           children: <ForDetailsSignupPart />,
         },
         {
           name: 'not coming',
           title: 'Îmi pare rău 🥺 Sper totuși să ne vedem și cu altă ocazie!',
           isLoading: false,
-          if: invitee?.presenceStatus === PresenceStatus.negated,
+          if:
+            (!isPastDeadline &&
+              invitee?.presenceStatus === PresenceStatus.negated) ||
+            (isPastDeadline &&
+              invitee?.presenceStatus !== PresenceStatus.confirmed),
           children: <ForDetailsSignupPart />,
         },
       ].filter((s) => s.if),
@@ -162,9 +181,11 @@ export default function InvitationPage() {
     <Layout isLoading={isLoading}>
       <div className="flex h-32 justify-around">
         <div className="flex-grow basis-0">
-          <img src={dipicLogo} className="h-14" />
+          <a href="https://dipicfun.ro" target="_blank">
+            <img src={dipicLogo} className="h-14" />
+          </a>
         </div>
-        <div>&times;</div>
+        <div>&amp;</div>
         <div className="flex-grow basis-0">
           <BubdayLogo />
         </div>
@@ -204,8 +225,8 @@ export default function InvitationPage() {
         </div>
       </div>
       <P className="text-gray-200 mb-10">
-        pentru a sărbători împreună jucând Laser Tag, pe console, și mâncând o
-        pizza împreună.
+        pentru a sărbători împreună jucând Laser Tag și mâncând o pizza
+        împreună.
       </P>
       {screens.map((screen, idx) => (
         <>

@@ -18,12 +18,14 @@ const throws = () => {
 const InviteeContext = createContext<{
   invitee: Invitee | null;
   isLoading: boolean;
+  isLoggedIn: boolean;
   refetch: () => Promise<unknown>;
   setUrlCode: (code: string) => void;
   axios: AxiosInstance;
 }>({
   invitee: null,
   isLoading: true,
+  isLoggedIn: false,
   refetch: throws,
   setUrlCode: throws,
   axios: null as any,
@@ -36,6 +38,8 @@ export function useInvitee() {
 export function InviteeProvider({ children }: PropsWithChildren) {
   const [token, setToken] = useState('');
   const [urlCode, setUrlCode] = useState('');
+  const [isLoginLoading, setIsLoginLoading] = useState(true);
+
   useEffect(() => {
     if (!urlCode) return;
     (async () => {
@@ -45,6 +49,7 @@ export function InviteeProvider({ children }: PropsWithChildren) {
         })
         .then((d) => d.data);
       setToken(token);
+      setIsLoginLoading(false);
     })();
   }, [urlCode]);
 
@@ -59,7 +64,7 @@ export function InviteeProvider({ children }: PropsWithChildren) {
 
   const {
     data: invitee,
-    isLoading,
+    isLoading: isQueryLoading,
     refetch,
   } = useQuery(
     ['invitee', 'me'],
@@ -69,7 +74,8 @@ export function InviteeProvider({ children }: PropsWithChildren) {
 
   const ctx = {
     invitee,
-    isLoading: isLoading || (!token && !urlCode) || (!token && !!urlCode),
+    isLoading: isLoginLoading || isQueryLoading,
+    isLoggedIn: !isLoginLoading && !!token,
     refetch,
     setUrlCode,
     axios,
