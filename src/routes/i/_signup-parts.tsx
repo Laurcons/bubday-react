@@ -139,6 +139,7 @@ export function FavoriteSongSignupPart({
 
 export function GreatSignupPart({ stats }: { stats: any }) {
   const { isPastDeadline } = useDeadline();
+  const { invitee } = useInvitee();
   return (
     <>
       {stats?.confirmedCount > 1 ? (
@@ -150,7 +151,10 @@ export function GreatSignupPart({ stats }: { stats: any }) {
           invitați ați confirmat prezența până acum.
         </P>
       ) : (
-        <P className="text-gray-200">Ești primul care a confirmat prezența!</P>
+        <P className="text-gray-200">
+          Ești {invitee?.gender === 'male' ? 'primul' : 'prima'} care a
+          confirmat prezența!
+        </P>
       )}
       {!isPastDeadline && (
         <P>

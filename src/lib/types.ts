@@ -4,6 +4,7 @@ export interface Invitee {
 
   nickname: string;
   fullName: string;
+  gender: 'male' | 'female';
 
   presenceStatus: PresenceStatus;
   pizzaPreference: string;

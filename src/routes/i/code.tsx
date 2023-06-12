@@ -191,8 +191,9 @@ export default function InvitationPage() {
         </div>
       </div>
       <div className="relative text-center text-gray-200 text-3xl font-bold tracking-tight z-0 px-3 mb-10">
-        {salutation} {invitee?.nickname}! Ești invitat la Laser Tag, de ziua
-        mea.
+        {salutation} {invitee?.nickname}! Ești{' '}
+        {invitee?.gender === 'male' ? 'invitat' : 'invitată'} la Laser Tag, de
+        ziua mea.
         <div className="absolute -z-10 right-7 bottom-0 flex flex-col justify-center">
           <div className="opacity-80 font-medium text-amber-600 animate-bounce">
             <div className="rotate-12">20</div>
